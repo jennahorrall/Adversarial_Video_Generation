@@ -1,4 +1,4 @@
-# Adversarial Video Generation
+#Adversarial Video Generation
 This project implements a generative adversarial network to predict future frames of video, as detailed in 
 ["Deep Multi-Scale Video Prediction Beyond Mean Square Error"](https://arxiv.org/abs/1511.05440) by Mathieu, 
 Couprie & LeCun. Their official code (using Torch) can be found 
