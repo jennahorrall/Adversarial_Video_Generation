@@ -17,25 +17,29 @@ def process_training_data(num_clips):
 
     @warning: This can take a couple of hours to complete with large numbers of clips.
     """
+    # train_dir_clips = directory to save processed data to
     num_prev_clips = len(glob(c.TRAIN_DIR_CLIPS + '*'))
-
-    for clip_num in xrange(num_prev_clips, num_clips + num_prev_clips):
+    
+    # process each clip in num clips and save to train_dir_clips directory
+    for clip_num in range(num_prev_clips, num_clips + num_prev_clips):
+        
         clip = process_clip()
 
+        # save compressed data to train_dir_clips dir
         np.savez_compressed(c.TRAIN_DIR_CLIPS + str(clip_num), clip)
 
-        if (clip_num + 1) % 100 == 0: print 'Processed %d clips' % (clip_num + 1)
+        if (clip_num + 1) % 100 == 0: print('Processed %d clips' % (clip_num + 1))
 
 
 def usage():
-    print 'Options:'
-    print '-n/--num_clips= <# clips to process for training> (Default = 5000000)'
-    print '-t/--train_dir= <Directory of full training frames>'
-    print '-c/--clips_dir= <Save directory for processed clips>'
-    print "                (I suggest making this a hidden dir so the filesystem doesn't freeze"
-    print "                 with so many files. DON'T `ls` THIS DIRECTORY!)"
-    print '-o/--overwrite  (Overwrites the previous data in clips_dir)'
-    print '-H/--help       (Prints usage)'
+    print('Options:')
+    print('-n/--num_clips= <# clips to process for training> (Default = 5000000)')
+    print('-t/--train_dir= <Directory of full training frames>')
+    print('-c/--clips_dir= <Save directory for processed clips>')
+    print("                (I suggest making this a hidden dir so the filesystem doesn't freeze")
+    print("                 with so many files. DON'T `ls` THIS DIRECTORY!)")
+    print('-o/--overwrite  (Overwrites the previous data in clips_dir)')
+    print('-H/--help       (Prints usage)')
 
 
 def main():
@@ -67,7 +71,10 @@ def main():
 
     # set train frame dimensions
     assert os.path.exists(c.TRAIN_DIR)
-    c.FULL_HEIGHT, c.FULL_WIDTH = c.get_train_frame_dims()
+    
+    
+    # c.FULL_HEIGHT, c.FULL_WIDTH = c.get_train_frame_dims()
+    c.FULL_HEIGHT, c.FULL_WIDTH = 80, 200
 
     ##
     # Process data for training

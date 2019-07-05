@@ -67,25 +67,44 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
              [num_clips, c.TRAIN_HEIGHT, c.TRAIN_WIDTH, (3 * (c.HIST_LEN + num_rec_out))].
              A batch of frame sequences with values normalized in range [-1, 1].
     """
+
+    # data dir = train dir
+    # num_clips = 1
+    
     clips = np.empty([num_clips,
                       c.FULL_HEIGHT,
                       c.FULL_WIDTH,
                       (3 * (c.HIST_LEN + num_rec_out))])
 
     # get num_clips random episodes
+    # choose a random dir in either Test or Train 
     ep_dirs = np.random.choice(glob(os.path.join(data_dir, '*')), num_clips)
 
     # get a random clip of length HIST_LEN + num_rec_out from each episode
     for clip_num, ep_dir in enumerate(ep_dirs):
+        
+        # random dir in Train/Test
         ep_frame_paths = sorted(glob(os.path.join(ep_dir, '*')))
+        
+        # start index of random dir in Train/Test
         start_index = np.random.choice(len(ep_frame_paths) - (c.HIST_LEN + num_rec_out - 1))
+        
+        # list of path names to each random dir in Train/Test
         clip_frame_paths = ep_frame_paths[start_index:start_index + (c.HIST_LEN + num_rec_out)]
 
+            
         # read in frames
+        # frame_num = # of img in dir starting at 0
+        # frame_path = path name to one image in dir
         for frame_num, frame_path in enumerate(clip_frame_paths):
-            frame = imread(frame_path, mode='RGB')
+            
+            # save frame data
+            frame = imread(frame_path, mode='L')
+            
+            # normalize frames
             norm_frame = normalize_frames(frame)
-
+            
+            # save one full frame in clips
             clips[clip_num, :, :, frame_num * 3:(frame_num + 1) * 3] = norm_frame
 
     return clips
