@@ -41,7 +41,7 @@ def clear_dir(directory):
                 shutil.rmtree(path)
         except Exception as e:
             print(e)
-
+# read test image and get shape
 def get_test_frame_dims():
     img_path = glob(os.path.join(TEST_DIR, '*/*'))[0]   
     img = imread(img_path, mode='RGB')
