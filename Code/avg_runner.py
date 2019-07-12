@@ -125,7 +125,7 @@ def main():
     load_path = None
     test_only = False
     num_test_rec = 1  # number of recursive predictions to make on test
-    num_steps = 1000
+    num_steps = 100
     try:
         opts, _ = getopt.getopt(sys.argv[1:], 'l:t:r:a:n:s:OTH',
                                 ['load_path=', 'test_dir=', 'recursions=', 'adversarial=', 'name=',
@@ -170,6 +170,8 @@ def main():
     # set test frame dimensions
     assert os.path.exists(c.TEST_DIR)
     c.FULL_HEIGHT, c.FULL_WIDTH = c.get_test_frame_dims()
+    print(c.FULL_HEIGHT)
+    print(c.FULL_WIDTH)
 
     ##
     # Init and run the predictor

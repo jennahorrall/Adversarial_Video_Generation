@@ -43,26 +43,30 @@ def clear_dir(directory):
             print(e)
 
 def get_test_frame_dims():
-    img_path = glob(os.path.join(TEST_DIR, '*/*'))[0]
-    print(img_path)    
-    img = imread(img_path, mode='RGB')
-    shape = np.shape(img)
-    print(shape)
-    print(shape[0])
-    print(shape[1])
 
-    return shape[0], shape[1]
+    img_path = glob(os.path.join(TEST_DIR, '*/*'))[0]
+
+    file = np.loadtxt(open(img_path, "r"))
+    dims = np.array(file)
+
+    #img = imread(img_path, mode='RGB')
+    #shape = np.shape(img)
+
+    return dims.shape[0], dims.shape[1]
+    #return shape[0], shape[1]
 
 def get_train_frame_dims():
     img_path = glob(os.path.join(TRAIN_DIR, '*/*'))[0]
-    print(img_path)
-    img = imread(img_path, mode='RGB')
-    shape = np.shape(img)
-    print(shape)
-    print(shape[0])
-    print(shape[1])
 
-    return shape[0], shape[1]
+    file = np.loadtxt(open(img_path, "r"))
+    dims = np.array(file)
+
+
+    #img = imread(img_path, mode='RGB')
+    #shape = np.shape(img)
+     
+    return dims.shape[0], dims.shape[1]
+    #return shape[0], shape[1]    
 
 def set_test_dir(directory):
     """
@@ -78,9 +82,9 @@ def set_test_dir(directory):
 # root directory for all data
 DATA_DIR = get_dir('../Data/')
 # directory of unprocessed training frames
-TRAIN_DIR = os.path.join(DATA_DIR, 'Ms_Pacman/Train/')
+TRAIN_DIR = os.path.join(DATA_DIR, 'Rescal/Train/')
 # directory of unprocessed test frames
-TEST_DIR = os.path.join(DATA_DIR, 'Ms_Pacman/Test/')
+TEST_DIR = os.path.join(DATA_DIR, 'Rescal/Test/')
 # Directory of processed training clips.
 # hidden so finder doesn't freeze w/ so many files. DON'T USE `ls` COMMAND ON THIS DIR!
 TRAIN_DIR_CLIPS = get_dir(os.path.join(DATA_DIR, '.Clips/'))
@@ -91,10 +95,13 @@ MOVEMENT_THRESHOLD = 100
 NUM_CLIPS = len(glob(TRAIN_DIR_CLIPS + '*'))
 
 # the height and width of the full frames to test on. Set in avg_runner.py or process_data.py main.
-FULL_HEIGHT = 210
-FULL_WIDTH = 160
-#FULL_HEIGHT = 50
-#FULL_WIDTH = 50
+
+#FULL_HEIGHT = 210
+#FULL_WIDTH = 160
+
+FULL_HEIGHT = 50
+FULL_WIDTH = 50
+
 # the height and width of the patches to train on
 TRAIN_HEIGHT = TRAIN_WIDTH = 32
 

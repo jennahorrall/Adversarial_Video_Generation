@@ -11,7 +11,7 @@ from tfutils import log10
 # Data
 ##
 
-def normalize_frames(frames):
+def normalize_frames(frames, max_h):
     """
     Convert frames from int8 [0, 255] to float32 [-1, 1].
 
@@ -20,12 +20,17 @@ def normalize_frames(frames):
     @return: The normalized frames.
     """
     new_frames = frames.astype(np.float32)
-    new_frames /= (255 / 2)
+    new_frames /= (max_h / 2)
+
+    #normalization for pixel data
+    #new_frames /= (255 / 2)
+
+
     new_frames -= 1
 
     return new_frames
 
-def denormalize_frames(frames):
+def denormalize_frames(frames, max_h_denormal):
     """
     Performs the inverse operation of normalize_frames.
 
@@ -34,7 +39,12 @@ def denormalize_frames(frames):
     @return: The denormalized frames.
     """
     new_frames = frames + 1
-    new_frames *= (255 / 2)
+
+    #denormalization for pixel data
+    #new_frames *= (255 / 2)
+
+
+    new_frames *= (max_h_denormal)
     # noinspection PyUnresolvedReferences
     new_frames = new_frames.astype(np.uint8)
 
@@ -84,8 +94,19 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
         # read in frames
         for frame_num, frame_path in enumerate(clip_frame_paths):
            
-            frame = imread(frame_path, mode='RGB')
-            norm_frame = normalize_frames(frame)
+            #use for reading in image directly
+            #frame = imread(frame_path, mode='RGB')
+            #norm_frame = normalize_frames(frame)
+            
+            #load in 2D array
+            frame = np.loadtxt(open(frame_path, "r"))
+
+            #convert to 3D
+            frame_3 = np.dstack([frame]*3)
+
+            #normalize based on max num in data
+            max_h = np.amax(frame_3)
+            norm_frame = normalize_frames(frame_3, max_h)
 
             clips[clip_num, :, :, frame_num * 3:(frame_num + 1) * 3] = norm_frame
 

@@ -43,7 +43,7 @@ def main():
     # Handle command line input
     ##
 
-    num_clips = 9418
+    num_clips = 33
 
     try:
         opts, _ = getopt.getopt(sys.argv[1:], 'n:t:c:oH',
