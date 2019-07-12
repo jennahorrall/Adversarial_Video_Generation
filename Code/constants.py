@@ -44,15 +44,23 @@ def clear_dir(directory):
 
 def get_test_frame_dims():
     img_path = glob(os.path.join(TEST_DIR, '*/*'))[0]
+    print(img_path)    
     img = imread(img_path, mode='RGB')
     shape = np.shape(img)
+    print(shape)
+    print(shape[0])
+    print(shape[1])
 
     return shape[0], shape[1]
 
 def get_train_frame_dims():
     img_path = glob(os.path.join(TRAIN_DIR, '*/*'))[0]
+    print(img_path)
     img = imread(img_path, mode='RGB')
     shape = np.shape(img)
+    print(shape)
+    print(shape[0])
+    print(shape[1])
 
     return shape[0], shape[1]
 
@@ -85,6 +93,8 @@ NUM_CLIPS = len(glob(TRAIN_DIR_CLIPS + '*'))
 # the height and width of the full frames to test on. Set in avg_runner.py or process_data.py main.
 FULL_HEIGHT = 210
 FULL_WIDTH = 160
+#FULL_HEIGHT = 50
+#FULL_WIDTH = 50
 # the height and width of the patches to train on
 TRAIN_HEIGHT = TRAIN_WIDTH = 32
 
