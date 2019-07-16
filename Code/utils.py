@@ -20,11 +20,14 @@ def normalize_frames(frames, max_h):
     @return: The normalized frames.
     """
     new_frames = frames.astype(np.float32)
+
+    #normalization for rescal data
     new_frames /= (max_h / 2)
 
+    """
     #normalization for pixel data
-    #new_frames /= (255 / 2)
-
+    new_frames /= (255 / 2)
+    """
 
     new_frames -= 1
 
@@ -40,10 +43,12 @@ def denormalize_frames(frames, max_h_denormal):
     """
     new_frames = frames + 1
 
+    """
     #denormalization for pixel data
-    #new_frames *= (255 / 2)
+    new_frames *= (255 / 2)
+    """
 
-
+    #denormalization for rescal data
     new_frames *= (max_h_denormal)
     # noinspection PyUnresolvedReferences
     new_frames = new_frames.astype(np.uint8)
@@ -81,30 +86,48 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
                       c.FULL_HEIGHT,
                       c.FULL_WIDTH,
                       (3 * (c.HIST_LEN + num_rec_out))])
+    #print(data_dir)
 
+    """
+    # default data options
     # get num_clips random episodes
     ep_dirs = np.random.choice(glob(os.path.join(data_dir, '*')), num_clips)
 
+    """
+
+    # process rescal data
+    list_dirs = []
+    while (list_dirs == []):
+        ep_dirs = np.random.choice(glob(os.path.join(data_dir, '*')), num_clips)
+        for x in os.listdir(ep_dirs[0]):
+            if os.path.isdir(os.path.join(ep_dirs[0], x)) and x.startswith("Frame_"):
+                list_dirs.append(x)
+        
+    #choose a random dir from list
+    random_dir = np.random.choice(list_dirs,1)
+
+    #set path to random dir for iterating
+    ep_dir_1 = glob(os.path.join(ep_dirs[0], random_dir[0]))    
+
+
     # get a random clip of length HIST_LEN + num_rec_out from each episode
-    for clip_num, ep_dir in enumerate(ep_dirs):
-        ep_frame_paths = sorted(glob(os.path.join(ep_dir, '*')))
+    for clip_num, ep_dir in enumerate(ep_dir_1):
+
+        ep_frame_paths = sorted(glob(os.path.join(ep_dir_1[0], '*')))
         start_index = np.random.choice(len(ep_frame_paths) - (c.HIST_LEN + num_rec_out - 1))
         clip_frame_paths = ep_frame_paths[start_index:start_index + (c.HIST_LEN + num_rec_out)]
 
         # read in frames
         for frame_num, frame_path in enumerate(clip_frame_paths):
            
-            #use for reading in image directly
-            #frame = imread(frame_path, mode='RGB')
-            #norm_frame = normalize_frames(frame)
-            
-            #load in 2D array
+            """
+            use for reading in image directly
+            frame = imread(frame_path, mode='RGB')
+            norm_frame = normalize_frames(frame)
+            """
+            #rescal data
             frame = np.loadtxt(open(frame_path, "r"))
-
-            #convert to 3D
             frame_3 = np.dstack([frame]*3)
-
-            #normalize based on max num in data
             max_h = np.amax(frame_3)
             norm_frame = normalize_frames(frame_3, max_h)
 

@@ -31,6 +31,7 @@ def usage():
     print('Options:')
     print('-n/--num_clips= <# clips to process for training> (Default = 5000000)')
     print('-t/--train_dir= <Directory of full training frames>')
+    print('-T/--test_dir= <Directory of full testing frames>')
     print('-c/--clips_dir= <Save directory for processed clips>')
     print("                (I suggest making this a hidden dir so the filesystem doesn't freeze")
     print("                 with so many files. DON'T `ls` THIS DIRECTORY!)")
@@ -43,11 +44,11 @@ def main():
     # Handle command line input
     ##
 
-    num_clips = 33
+    num_clips = 1000
 
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 'n:t:c:oH',
-                                ['num_clips=', 'train_dir=', 'clips_dir=', 'overwrite', 'help'])
+        opts, _ = getopt.getopt(sys.argv[1:], 'n:t:T:c:oH',
+                                ['num_clips=', 'train_dir=', 'test_dir=', 'clips_dir=', 'overwrite', 'help'])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -57,6 +58,8 @@ def main():
             num_clips = int(arg)
         if opt in ('-t', '--train_dir'):
             c.TRAIN_DIR = c.get_dir(arg)
+        if opt in ('-T', '--test_dir'):
+            c.TEST_DIR = c.get_dir(arg)
         if opt in ('-c', '--clips_dir'):
             c.TRAIN_DIR_CLIPS = c.get_dir(arg)
         if opt in ('-o', '--overwrite'):
@@ -67,9 +70,9 @@ def main():
 
     # set train frame dimensions
     assert os.path.exists(c.TRAIN_DIR)
-    c.FULL_HEIGHT, c.FULL_WIDTH = c.get_train_frame_dims()
-    #c.FULL_HEIGHT = 50
-    #c.FUL_WIDTH = 50
+    #c.FULL_HEIGHT, c.FULL_WIDTH = c.get_train_frame_dims()
+    c.FULL_HEIGHT = 50
+    c.FULL_WIDTH = 50
 
 
 

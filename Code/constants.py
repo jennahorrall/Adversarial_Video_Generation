@@ -45,28 +45,26 @@ def clear_dir(directory):
 def get_test_frame_dims():
 
     img_path = glob(os.path.join(TEST_DIR, '*/*'))[0]
+    print(img_path)
+    #file = np.loadtxt(open(img_path, "r"))
+    #dims = np.array(file)
+    #return dims.shape[0], dims.shape[1]
 
-    file = np.loadtxt(open(img_path, "r"))
-    dims = np.array(file)
-
-    #img = imread(img_path, mode='RGB')
-    #shape = np.shape(img)
-
-    return dims.shape[0], dims.shape[1]
-    #return shape[0], shape[1]
+    img = imread(img_path, mode='RGB')
+    shape = np.shape(img)
+    return shape[0], shape[1]
 
 def get_train_frame_dims():
+
     img_path = glob(os.path.join(TRAIN_DIR, '*/*'))[0]
+    print(img_path)
+    #file = np.loadtxt(open(img_path, "r"))
+    #dims = np.array(file)
+    #return dims.shape[0], dims.shape[1]
 
-    file = np.loadtxt(open(img_path, "r"))
-    dims = np.array(file)
-
-
-    #img = imread(img_path, mode='RGB')
-    #shape = np.shape(img)
-     
-    return dims.shape[0], dims.shape[1]
-    #return shape[0], shape[1]    
+    img = imread(img_path, mode='RGB')
+    shape = np.shape(img)
+    return shape[0], shape[1]    
 
 def set_test_dir(directory):
     """
@@ -77,7 +75,8 @@ def set_test_dir(directory):
     global TEST_DIR, FULL_HEIGHT, FULL_WIDTH
 
     TEST_DIR = directory
-    FULL_HEIGHT, FULL_WIDTH = get_test_frame_dims()
+    #FULL_HEIGHT, FULL_WIDTH = get_test_frame_dims()
+    FULL_HEIGHT, FULL_WIDTH = 50, 50
 
 # root directory for all data
 DATA_DIR = get_dir('../Data/')

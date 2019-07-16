@@ -169,9 +169,9 @@ def main():
 
     # set test frame dimensions
     assert os.path.exists(c.TEST_DIR)
-    c.FULL_HEIGHT, c.FULL_WIDTH = c.get_test_frame_dims()
-    print(c.FULL_HEIGHT)
-    print(c.FULL_WIDTH)
+    c.FULL_HEIGHT, c.FULL_WIDTH = 50, 50
+    #print(c.FULL_HEIGHT)
+    #print(c.FULL_WIDTH)
 
     ##
     # Init and run the predictor

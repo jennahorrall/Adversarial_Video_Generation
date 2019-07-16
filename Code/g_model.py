@@ -283,14 +283,10 @@ class GeneratorModel:
         # User output
         ##
         if global_step % c.STATS_FREQ == 0:
-            print('GeneratorModel : Step ')
-            print(global_step)
-            print('                 Global Loss    : ')
-            print(global_loss)
-            print('                 PSNR Error     : ')
-            print(global_psnr_error)
-            print('                 Sharpdiff Error: ')
-            print(global_sharpdiff_error)
+            print(str.format('GeneratorModel : Step {0}'.format(global_step)))
+            print(str.format('                 Global Loss    : {0}'.format(global_loss)))
+            print(str.format('                 PSNR Error     : {0}'.format(global_psnr_error)))
+            print(str.format('                 Sharpdiff Error: {0}'.format(global_sharpdiff_error)))
         if global_step % c.SUMMARY_FREQ == 0:
             self.summary_writer.add_summary(summaries, global_step)
             print('GeneratorModel: saved summaries')
@@ -400,6 +396,14 @@ class GeneratorModel:
             rec_preds.append(preds)
             rec_summaries.append(summaries)
 
+            print(str.format('Recursion:       {0}'.format(rec_num)))
+            print(str.format('PSNR error:      {0}'.format(psnr)))
+            print(str.format('Sharpdiff Error: {0}'.format(rec_num)))
+
+
+
+            """
+
             print('Recursion ')
             print(rec_num)
             print('PSNR Error     : ')
@@ -407,6 +411,8 @@ class GeneratorModel:
             print('Sharpdiff Error: ')
             print(sharpdiff)
 
+            """
+            
         # write summaries
         # TODO: Think of a good way to write rec output summaries - rn, just using first output.
         self.summary_writer.add_summary(rec_summaries[0], global_step)
