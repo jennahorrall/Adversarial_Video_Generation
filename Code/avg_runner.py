@@ -103,6 +103,7 @@ def usage():
     print('Options:')
     print('-l/--load_path=    <Relative/path/to/saved/model>')
     print('-t/--test_dir=     <Directory of test images>')
+    print('-d/--train_dir=     <Directory of train images>')
     print('-r/--recursions=   <# recursive predictions to make on test>')
     print('-a/--adversarial=  <{t/f}> (Whether to use adversarial training. Default=True)')
     print('-n/--name=         <Subdirectory of ../Data/Save/*/ in which to save output of this run>')
@@ -125,10 +126,10 @@ def main():
     load_path = None
     test_only = False
     num_test_rec = 1  # number of recursive predictions to make on test
-    num_steps = 50000
+    num_steps = 1000
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 'l:t:r:a:n:s:OTH',
-                                ['load_path=', 'test_dir=', 'recursions=', 'adversarial=', 'name=',
+        opts, _ = getopt.getopt(sys.argv[1:], 'l:t:d:r:a:n:s:OTH',
+                                ['load_path=', 'test_dir=', 'train_dir=', 'recursions=', 'adversarial=', 'name=',
                                  'steps=', 'overwrite', 'test_only', 'help', 'stats_freq=',
                                  'summary_freq=', 'img_save_freq=', 'test_freq=',
                                  'model_save_freq='])
@@ -141,6 +142,8 @@ def main():
             load_path = arg
         if opt in ('-t', '--test_dir'):
             c.set_test_dir(arg)
+        if opt in ('-d', '--train_dir'):
+            c.TRAIN_DIR = arg
         if opt in ('-r', '--recursions'):
             num_test_rec = int(arg)
         if opt in ('-a', '--adversarial'):

@@ -86,14 +86,6 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
                       c.FULL_HEIGHT,
                       c.FULL_WIDTH,
                       (3 * (c.HIST_LEN + num_rec_out))])
-    #print(data_dir)
-
-    """
-    # default data options
-    # get num_clips random episodes
-    ep_dirs = np.random.choice(glob(os.path.join(data_dir, '*')), num_clips)
-
-    """
 
     # process rescal data
     list_dirs = []
@@ -103,34 +95,27 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
             if os.path.isdir(os.path.join(ep_dirs[0], x)) and x.startswith("Frame_"):
                 list_dirs.append(x)
         
-    #choose a random dir from list
-    random_dir = np.random.choice(list_dirs,1)
+    #choose random dirs from list
+    random_dir = np.random.choice(list_dirs, num_clips)
 
-    #set path to random dir for iterating
-    ep_dir_1 = glob(os.path.join(ep_dirs[0], random_dir[0]))    
-
+    dirs = []
+    for i in random_dir:
+        dirs.append(os.path.join(ep_dirs[0], i))
 
     # get a random clip of length HIST_LEN + num_rec_out from each episode
-    for clip_num, ep_dir in enumerate(ep_dir_1):
+    for clip_num, ep_dir in enumerate(dirs):
 
-        ep_frame_paths = sorted(glob(os.path.join(ep_dir_1[0], '*')))
+        ep_frame_paths = sorted(glob(os.path.join(ep_dir, '*')))
         start_index = np.random.choice(len(ep_frame_paths) - (c.HIST_LEN + num_rec_out - 1))
         clip_frame_paths = ep_frame_paths[start_index:start_index + (c.HIST_LEN + num_rec_out)]
-
+       
         # read in frames
         for frame_num, frame_path in enumerate(clip_frame_paths):
-           
-            """
-            use for reading in image directly
-            frame = imread(frame_path, mode='RGB')
-            norm_frame = normalize_frames(frame)
-            """
-            #rescal data
+                      
             frame = np.loadtxt(open(frame_path, "r"))
-            frame_3 = np.dstack([frame]*3)
+            frame_3 = np.dstack([frame]*3)            
             max_h = np.amax(frame_3)
             norm_frame = normalize_frames(frame_3, max_h)
-
             clips[clip_num, :, :, frame_num * 3:(frame_num + 1) * 3] = norm_frame
 
     return clips

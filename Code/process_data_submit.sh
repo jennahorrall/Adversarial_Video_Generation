@@ -9,7 +9,12 @@ conda activate py27tens12
 
 PROCESS_DATA_LOG="data.log"
 
+TRAIN_DIR="/p/lscratchh/kochansk/summer2019/rescal-snow/test_gaussian_parallel/Train/"
+
+TEST_DIR="/p/lscratchh/kochansk/summer2019/rescal-snow/test_gaussian_parallel/Test/"
+
+
 chmod u+rwx *
-python process_data.py -n 800000 -t /p/lscratchh/kochansk/summer2019/rescal-snow/test_gaussian_parallel/Train/ -T /p/lscratchh/kochansk/summer2019/rescal-snow/test_gaussian_parallel/Test/ -o >> $PROCESS_DATA_LOG
+python process_data.py -t $TRAIN_DIR -T $TEST_DIR -o > $PROCESS_DATA_LOG
 
 

@@ -3,7 +3,7 @@
 #MSUB -A intelpwr
 #MSUB -M horrall1@llnl.gov
 #MSUB -l nodes=1
-#MSUB -l walltime=24:00:00
+#MSUB -l walltime=01:00:00
 
 # This is an example script for submitting runs to a computing cluster
 # Current options:

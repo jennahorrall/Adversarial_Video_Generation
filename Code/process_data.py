@@ -44,7 +44,7 @@ def main():
     # Handle command line input
     ##
 
-    num_clips = 1000
+    num_clips = 5000000
 
     try:
         opts, _ = getopt.getopt(sys.argv[1:], 'n:t:T:c:oH',

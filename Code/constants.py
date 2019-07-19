@@ -101,6 +101,8 @@ NUM_CLIPS = len(glob(TRAIN_DIR_CLIPS + '*'))
 FULL_HEIGHT = 50
 FULL_WIDTH = 50
 
+
+
 # the height and width of the patches to train on
 TRAIN_HEIGHT = TRAIN_WIDTH = 32
 
