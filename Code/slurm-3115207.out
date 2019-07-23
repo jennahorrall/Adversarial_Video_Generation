@@ -1,1 +1,4 @@
 starting run: 
+slurmstepd: error: *** JOB 3115207 ON quartz425 CANCELLED AT 2019-07-19T15:12:30 DUE TO TIME LIMIT ***
+srun: Job step aborted: Waiting up to 62 seconds for job step to finish.
+slurmstepd: error: *** STEP 3115207.0 ON quartz425 CANCELLED AT 2019-07-19T15:12:30 DUE TO TIME LIMIT ***

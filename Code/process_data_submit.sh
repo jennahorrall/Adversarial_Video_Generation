@@ -11,10 +11,7 @@ PROCESS_DATA_LOG="data.log"
 
 TRAIN_DIR="/p/lscratchh/kochansk/summer2019/rescal-snow/test_gaussian_parallel/Train/"
 
-TEST_DIR="/p/lscratchh/kochansk/summer2019/rescal-snow/test_gaussian_parallel/Test/"
-
-
 chmod u+rwx *
-python process_data.py -t $TRAIN_DIR -T $TEST_DIR -o > $PROCESS_DATA_LOG
+python process_data.py -n 100000 -t $TRAIN_DIR -o > $PROCESS_DATA_LOG
 
 

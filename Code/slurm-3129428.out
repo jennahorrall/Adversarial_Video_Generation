@@ -1,0 +1,18 @@
+starting run: 
+Traceback (most recent call last):
+  File "process_data.py", line 87, in <module>
+    main()
+  File "process_data.py", line 83, in main
+    process_training_data(num_clips)
+  File "process_data.py", line 25, in process_training_data
+    np.savez_compressed(c.TRAIN_DIR_CLIPS + str(clip_num), clip)
+  File "/p/lscratchh/kochansk/summer2019/jenna/anaconda3/envs/py27tens12/lib/python2.7/site-packages/numpy/lib/npyio.py", line 600, in savez_compressed
+    _savez(file, args, kwds, True)
+  File "/p/lscratchh/kochansk/summer2019/jenna/anaconda3/envs/py27tens12/lib/python2.7/site-packages/numpy/lib/npyio.py", line 630, in _savez
+    fd, tmpfile = tempfile.mkstemp(suffix='-numpy.npy')
+  File "/p/lscratchh/kochansk/summer2019/jenna/anaconda3/envs/py27tens12/lib/python2.7/tempfile.py", line 314, in mkstemp
+    return _mkstemp_inner(dir, prefix, suffix, flags)
+  File "/p/lscratchh/kochansk/summer2019/jenna/anaconda3/envs/py27tens12/lib/python2.7/tempfile.py", line 244, in _mkstemp_inner
+    fd = _os.open(file, flags, 0600)
+OSError: [Errno 2] No such file or directory: '/var/tmp/horrall1/tmpaDd41g-numpy.npy'
+srun: error: quartz184: task 0: Exited with exit code 1
