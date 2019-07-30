@@ -111,8 +111,9 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
        
         # read in frames
         for frame_num, frame_path in enumerate(clip_frame_paths):
-                      
-            frame = np.loadtxt(open(frame_path, "r"))
+            file = open(frame_path, "r")
+            frame = np.loadtxt(file)
+            file.close()
             frame_3 = np.dstack([frame]*3)            
             max_h = np.amax(frame_3)
             norm_frame = normalize_frames(frame_3, max_h)
@@ -155,7 +156,6 @@ def get_train_batch():
     for i in range(c.BATCH_SIZE):
         path = c.TRAIN_DIR_CLIPS + str(np.random.choice(c.NUM_CLIPS)) + '.npz'
         clip = np.load(path)['arr_0']
-
         clips[i] = clip
 
     return clips
