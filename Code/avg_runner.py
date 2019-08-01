@@ -44,8 +44,8 @@ class AVGRunner:
                                       self.summary_writer,
                                       c.TRAIN_HEIGHT,
                                       c.TRAIN_WIDTH,
-                                      c.FULL_HEIGHT,
-                                      c.FULL_WIDTH,
+                                      c.TEST_HEIGHT,
+                                      c.TEST_WIDTH,
                                       c.SCALE_FMS_G,
                                       c.SCALE_KERNEL_SIZES_G)
 
@@ -126,10 +126,10 @@ def main():
     load_path = None
     test_only = False
     num_test_rec = 1  # number of recursive predictions to make on test
-    num_steps = 1000
+    num_steps = 10
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 'l:t:d:r:a:n:s:OTH',
-                                ['load_path=', 'test_dir=', 'train_dir=', 'recursions=', 'adversarial=', 'name=',
+        opts, _ = getopt.getopt(sys.argv[1:], 's:p:l:t:c:r:a:n:s:OTH',
+                                ['skip_num', 'max_pile_height', 'load_path=', 'test_dir=', 'clips_dir=', 'recursions=', 'adversarial=', 'name=',
                                  'steps=', 'overwrite', 'test_only', 'help', 'stats_freq=',
                                  'summary_freq=', 'img_save_freq=', 'test_freq=',
                                  'model_save_freq='])
@@ -138,12 +138,16 @@ def main():
         sys.exit(2)
 
     for opt, arg in opts:
+        if opt in ('-s', '--skip_num'):
+            c.SKIP_NUM = int(arg)
+        if opt in ('-p', '--max_pile_height'):
+            c.PILE_HEIGHT = int(arg)
         if opt in ('-l', '--load_path'):
             load_path = arg
         if opt in ('-t', '--test_dir'):
             c.set_test_dir(arg)
-        if opt in ('-d', '--train_dir'):
-            c.TRAIN_DIR = arg
+        if opt in ('-c', '--clips_dir'):
+            c.TRAIN_DIR_CLIPS = c.get_dir(arg)
         if opt in ('-r', '--recursions'):
             num_test_rec = int(arg)
         if opt in ('-a', '--adversarial'):
@@ -172,7 +176,7 @@ def main():
 
     # set test frame dimensions
     assert os.path.exists(c.TEST_DIR)
-    c.FULL_HEIGHT, c.FULL_WIDTH = 50, 50
+    c.TEST_HEIGHT, c.TEST_WIDTH = 50, 50
     #print(c.FULL_HEIGHT)
     #print(c.FULL_WIDTH)
 

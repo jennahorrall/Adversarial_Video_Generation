@@ -20,13 +20,23 @@ def process_training_data(num_clips):
     num_prev_clips = len(glob(c.TRAIN_DIR_CLIPS + '*'))
 
     for clip_num in range(num_prev_clips, num_clips + num_prev_clips):
+
         clip = process_clip()
+        
+        # add axis to clip for file saving purposes
+        reshape = np.expand_dims(clip,axis=0)   
+        if clip_num % 100 == 0:
+            save_name = clip_num + 100
+            np.savez_compressed(c.TRAIN_DIR_CLIPS + 'clips' + str(save_name-100) + '_to_' + str(save_name), reshape)        
 
-        np.savez_compressed(c.TRAIN_DIR_CLIPS + str(clip_num), clip)
-
+        # else load in previous array and concatanate new array to it
+        else:
+            loaded = np.load(c.TRAIN_DIR_CLIPS + 'clips' + str(save_name-100) + '_to_' + str(save_name) + '.npz')['arr_0']
+            new_clip = np.concatenate((loaded, reshape))
+            np.savez_compressed(c.TRAIN_DIR_CLIPS + 'clips' + str(save_name-100) + '_to_' + str(save_name), new_clip)
+            
         if (clip_num + 1) % 100 == 0: print('Processed %d clips' % (clip_num + 1))
-
-
+    
 def usage():
     print('Options:')
     print('-n/--num_clips= <# clips to process for training> (Default = 5000000)')
@@ -44,11 +54,11 @@ def main():
     # Handle command line input
     ##
 
-    num_clips = 5000000
+    num_clips = 1000
 
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 'n:t:T:c:oH',
-                                ['num_clips=', 'train_dir=', 'test_dir=', 'clips_dir=', 'overwrite', 'help'])
+        opts, _ = getopt.getopt(sys.argv[1:], 'n:s:p:t:T:c:oH',
+                                ['num_clips=', '--skip_num', 'max_pile_height=', 'train_dir=', 'test_dir=', 'clips_dir=', 'overwrite', 'help'])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -56,6 +66,10 @@ def main():
     for opt, arg in opts:
         if opt in ('-n', '--num_clips'):
             num_clips = int(arg)
+        if opt in ('-s', '--skip_num'):
+            c.SKIP_NUM = int(arg)
+        if opt in ('-p', '--max_pile_height'):
+            c.PILE_HEIGHT = int(arg)
         if opt in ('-t', '--train_dir'):
             c.TRAIN_DIR = c.get_dir(arg)
         if opt in ('-T', '--test_dir'):
@@ -70,9 +84,9 @@ def main():
 
     # set train frame dimensions
     assert os.path.exists(c.TRAIN_DIR)
-    #c.FULL_HEIGHT, c.FULL_WIDTH = c.get_train_frame_dims()
-    c.FULL_HEIGHT = 50
-    c.FULL_WIDTH = 50
+
+    c.TEST_HEIGHT = 50
+    c.TEST_WIDTH = 50
 
 
 

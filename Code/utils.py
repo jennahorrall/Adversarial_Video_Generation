@@ -21,13 +21,8 @@ def normalize_frames(frames, max_h):
     """
     new_frames = frames.astype(np.float32)
 
-    #normalization for rescal data
+    #normalize values based on max height in data file
     new_frames /= (max_h / 2)
-
-    """
-    #normalization for pixel data
-    new_frames /= (255 / 2)
-    """
 
     new_frames -= 1
 
@@ -43,13 +38,8 @@ def denormalize_frames(frames, max_h_denormal):
     """
     new_frames = frames + 1
 
-    """
-    #denormalization for pixel data
-    new_frames *= (255 / 2)
-    """
-
-    #denormalization for rescal data
-    new_frames *= (max_h_denormal)
+    #denormalize values based on max height in data file
+    new_frames *= (max_h_denormal / 2)
     # noinspection PyUnresolvedReferences
     new_frames = new_frames.astype(np.uint8)
 
@@ -83,40 +73,46 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
              A batch of frame sequences with values normalized in range [-1, 1].
     """
     clips = np.empty([num_clips,
-                      c.FULL_HEIGHT,
-                      c.FULL_WIDTH,
+                      c.TEST_HEIGHT,
+                      c.TEST_WIDTH,
                       (3 * (c.HIST_LEN + num_rec_out))])
 
-    # process rescal data
-    list_dirs = []
-    while (list_dirs == []):
-        ep_dirs = np.random.choice(glob(os.path.join(data_dir, '*')), num_clips)
-        for x in os.listdir(ep_dirs[0]):
-            if os.path.isdir(os.path.join(ep_dirs[0], x)) and x.startswith("Frame_"):
-                list_dirs.append(x)
-        
-    #choose random dirs from list
-    random_dir = np.random.choice(list_dirs, num_clips)
 
-    dirs = []
-    for i in random_dir:
-        dirs.append(os.path.join(ep_dirs[0], i))
+    # choose a random directory in "/test_parallel_gaussian/" containing log files
+    # i.e. "/test_parallel_gaussian/Pile_height14_Pile_width_19/out"
+    # amount of directories = num_clips
 
-    # get a random clip of length HIST_LEN + num_rec_out from each episode
+    dirs = np.random.choice(glob(os.path.join(data_dir,'*/out/')), num_clips)
+
+    # get a random clip of length HIST_LEN + num_rec_out from each directory
     for clip_num, ep_dir in enumerate(dirs):
 
+        # paths to log files in order from the directory 
         ep_frame_paths = sorted(glob(os.path.join(ep_dir, '*')))
-        start_index = np.random.choice(len(ep_frame_paths) - (c.HIST_LEN + num_rec_out - 1))
-        clip_frame_paths = ep_frame_paths[start_index:start_index + (c.HIST_LEN + num_rec_out)]
-       
-        # read in frames
-        for frame_num, frame_path in enumerate(clip_frame_paths):
+        start_index = np.random.choice(len(ep_frame_paths) - ((c.HIST_LEN + num_rec_out) * c.SKIP_NUM) + 1)
+        clip_frame_paths = ep_frame_paths[start_index:start_index + ((c.HIST_LEN + num_rec_out) * c.SKIP_NUM)]
+ 
+        width_max = np.random.randint(c.FULL_IMAGE_WIDTH - c.TEST_WIDTH)
+        height_max = np.random.randint(c.FULL_IMAGE_HEIGHT - c.TEST_HEIGHT)
+
+        clip_skipped_paths = []
+        for x in range(len(clip_frame_paths)):
+            if x == 0 or x % (c.SKIP_NUM) == 0:
+                clip_skipped_paths.append(clip_frame_paths[x])
+
+        # read in cropped frames in sequence
+        for frame_num, frame_path in enumerate(clip_skipped_paths):   
+
+            # this file contains the full 600 x 150 x 100 picture - need to crop to 50x50 or 100x100            
             file = open(frame_path, "r")
             frame = np.loadtxt(file)
             file.close()
-            frame_3 = np.dstack([frame]*3)            
-            max_h = np.amax(frame_3)
-            norm_frame = normalize_frames(frame_3, max_h)
+
+            cropped_frame = frame[height_max:height_max + c.TEST_HEIGHT, width_max:width_max + c.TEST_WIDTH]
+
+            #stack and normalize frame values
+            frame_3 = np.dstack([cropped_frame]*3)
+            norm_frame = normalize_frames(frame_3, c.PILE_HEIGHT)
             clips[clip_num, :, :, frame_num * 3:(frame_num + 1) * 3] = norm_frame
 
     return clips
@@ -129,19 +125,18 @@ def process_clip():
              A frame sequence with values normalized in range [-1, 1].
     """
     clip = get_full_clips(c.TRAIN_DIR, 1)[0]
-
+    
     # Randomly crop the clip. With 0.05 probability, take the first crop offered, otherwise,
     # repeat until we have a clip with movement in it.
     take_first = np.random.choice(2, p=[0.95, 0.05])
     cropped_clip = np.empty([c.TRAIN_HEIGHT, c.TRAIN_WIDTH, 3 * (c.HIST_LEN + 1)])
     for i in range(100):  # cap at 100 trials in case the clip has no movement anywhere
-        crop_x = np.random.choice(c.FULL_WIDTH - c.TRAIN_WIDTH + 1)
-        crop_y = np.random.choice(c.FULL_HEIGHT - c.TRAIN_HEIGHT + 1)
+        crop_x = np.random.choice(c.TEST_WIDTH - c.TRAIN_WIDTH + 1)
+        crop_y = np.random.choice(c.TEST_HEIGHT - c.TRAIN_HEIGHT + 1)
         cropped_clip = clip[crop_y:crop_y + c.TRAIN_HEIGHT, crop_x:crop_x + c.TRAIN_WIDTH, :]
 
         if take_first or clip_l2_diff(cropped_clip) > c.MOVEMENT_THRESHOLD:
             break
-
     return cropped_clip
 
 def get_train_batch():
@@ -150,12 +145,24 @@ def get_train_batch():
 
     @return: An array of shape
             [c.BATCH_SIZE, c.TRAIN_HEIGHT, c.TRAIN_WIDTH, (3 * (c.HIST_LEN + 1))].
-    """
     clips = np.empty([c.BATCH_SIZE, c.TRAIN_HEIGHT, c.TRAIN_WIDTH, (3 * (c.HIST_LEN + 1))],
                      dtype=np.float32)
+
     for i in range(c.BATCH_SIZE):
         path = c.TRAIN_DIR_CLIPS + str(np.random.choice(c.NUM_CLIPS)) + '.npz'
         clip = np.load(path)['arr_0']
+        clips[i] = clip
+
+    """
+
+    clips = np.empty([c.BATCH_SIZE, c.TRAIN_HEIGHT, c.TRAIN_WIDTH, (3 * (c.HIST_LEN + 1))],
+                     dtype=np.float32)
+
+    random_choice = np.random.choice(glob(os.path.join(c.TRAIN_DIR_CLIPS,'*')), 1)
+    clip_array = np.load(random_choice[0])['arr_0']
+
+    for i in range(c.BATCH_SIZE):
+        clip = clip_array[np.random.choice(len(clip_array))]
         clips[i] = clip
 
     return clips

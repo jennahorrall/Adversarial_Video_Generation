@@ -72,11 +72,11 @@ def set_test_dir(directory):
 
     @param directory: The new test directory.
     """
-    global TEST_DIR, FULL_HEIGHT, FULL_WIDTH
+    global TEST_DIR, TEST_HEIGHT, TEST_WIDTH
 
     TEST_DIR = directory
     #FULL_HEIGHT, FULL_WIDTH = get_test_frame_dims()
-    FULL_HEIGHT, FULL_WIDTH = 50, 50
+    TEST_HEIGHT, TEST_WIDTH = 50, 50
 
 # root directory for all data
 DATA_DIR = get_dir('../Data/')
@@ -86,7 +86,11 @@ TRAIN_DIR = os.path.join(DATA_DIR, 'Rescal/Train/')
 TEST_DIR = os.path.join(DATA_DIR, 'Rescal/Test/')
 # Directory of processed training clips.
 # hidden so finder doesn't freeze w/ so many files. DON'T USE `ls` COMMAND ON THIS DIR!
-TRAIN_DIR_CLIPS = get_dir(os.path.join(DATA_DIR, '.Clips/'))
+TRAIN_DIR_CLIPS = get_dir(os.path.join(DATA_DIR, '.rescal_gaussian_3/'))
+
+PILE_HEIGHT = 100
+
+SKIP_NUM = 10
 
 # For processing clips. l2 diff between frames must be greater than this
 MOVEMENT_THRESHOLD = 100
@@ -95,13 +99,12 @@ NUM_CLIPS = len(glob(TRAIN_DIR_CLIPS + '*'))
 
 # the height and width of the full frames to test on. Set in avg_runner.py or process_data.py main.
 
-#FULL_HEIGHT = 210
-#FULL_WIDTH = 160
 
-FULL_HEIGHT = 50
-FULL_WIDTH = 50
+FULL_IMAGE_HEIGHT = 150
+FULL_IMAGE_WIDTH = 600
 
-
+TEST_HEIGHT = 50
+TEST_WIDTH = 50
 
 # the height and width of the patches to train on
 TRAIN_HEIGHT = TRAIN_WIDTH = 32
