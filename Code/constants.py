@@ -42,30 +42,6 @@ def clear_dir(directory):
         except Exception as e:
             print(e)
 
-def get_test_frame_dims():
-
-    img_path = glob(os.path.join(TEST_DIR, '*/*'))[0]
-    print(img_path)
-    #file = np.loadtxt(open(img_path, "r"))
-    #dims = np.array(file)
-    #return dims.shape[0], dims.shape[1]
-
-    img = imread(img_path, mode='RGB')
-    shape = np.shape(img)
-    return shape[0], shape[1]
-
-def get_train_frame_dims():
-
-    img_path = glob(os.path.join(TRAIN_DIR, '*/*'))[0]
-    print(img_path)
-    #file = np.loadtxt(open(img_path, "r"))
-    #dims = np.array(file)
-    #return dims.shape[0], dims.shape[1]
-
-    img = imread(img_path, mode='RGB')
-    shape = np.shape(img)
-    return shape[0], shape[1]    
-
 def set_test_dir(directory):
     """
     Edits all constants dependent on TEST_DIR.
@@ -75,21 +51,52 @@ def set_test_dir(directory):
     global TEST_DIR, TEST_HEIGHT, TEST_WIDTH
 
     TEST_DIR = directory
-    #FULL_HEIGHT, FULL_WIDTH = get_test_frame_dims()
-    TEST_HEIGHT, TEST_WIDTH = 50, 50
 
 # root directory for all data
+# NOTE: this is relative to working directory.
+
 DATA_DIR = get_dir('../Data/')
+
+# default data directories
+
 # directory of unprocessed training frames
 TRAIN_DIR = os.path.join(DATA_DIR, 'Rescal/Train/')
 # directory of unprocessed test frames
 TEST_DIR = os.path.join(DATA_DIR, 'Rescal/Test/')
 # Directory of processed training clips.
 # hidden so finder doesn't freeze w/ so many files. DON'T USE `ls` COMMAND ON THIS DIR!
-TRAIN_DIR_CLIPS = get_dir(os.path.join(DATA_DIR, '.rescal_gaussian_3/'))
+TRAIN_DIR_CLIPS = get_dir(os.path.join(DATA_DIR, '.rescal_gaussian/'))
 
+# max pile height of all data files
+# used to normalize values
 PILE_HEIGHT = 100
 
+
+"""
+SKIP_NUM is the amount of frames to skip over when processing/testing data
+skip_num = 1 would skip over no frames:     ALTI_00000_t0.log
+                                            ALTI_00001_t0.log
+                                            ALTI_00002_t0.log
+                                            ALTI_00003_t0.log
+                                            ALTI_00004_t0.log
+
+skip_num = 2 would skip over 1 frame:       ALTI_00000_t0.log
+                                            ALTI_00002_t0.log
+                                            ALTI_00004_t0.log
+                                            ALTI_00006_t0.log
+                                            ALTI_00008_t0.log
+
+skip_num = 10 would skip over 10 frames:    ALTI_000010_t0.log
+                                            ALTI_00002_t0.log
+                                            ALTI_00004_t0.log
+                                            ALTI_00006_t0.log
+                                            ALTI_00008_t0.log
+
+
+"""
+
+
+# default skip_num is 10, change when running avg_runner and process_data
 SKIP_NUM = 10
 
 # For processing clips. l2 diff between frames must be greater than this
@@ -99,14 +106,16 @@ NUM_CLIPS = len(glob(TRAIN_DIR_CLIPS + '*'))
 
 # the height and width of the full frames to test on. Set in avg_runner.py or process_data.py main.
 
-
+# full dims of image being read in
 FULL_IMAGE_HEIGHT = 150
 FULL_IMAGE_WIDTH = 600
 
-TEST_HEIGHT = 50
-TEST_WIDTH = 50
+# test dims - used for testing model: this is the size
+# of the images generated when testing the the model
+TEST_HEIGHT = 150
+TEST_WIDTH = 600
 
-# the height and width of the patches to train on
+# the height and width of the patches to train on - keep at 32x32
 TRAIN_HEIGHT = TRAIN_WIDTH = 32
 
 ##

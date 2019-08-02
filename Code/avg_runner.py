@@ -3,6 +3,7 @@ import getopt
 import sys
 import os
 
+
 from utils import get_train_batch, get_test_batch
 import constants as c
 from g_model import GeneratorModel
@@ -93,29 +94,30 @@ class AVGRunner:
     def test(self):
         """
         Runs one test step on the generator network.
-        """
+        """ 
         batch = get_test_batch(c.BATCH_SIZE, num_rec_out=self.num_test_rec)
         self.g_model.test_batch(
             batch, self.global_step, num_rec_out=self.num_test_rec)
 
-
 def usage():
     print('Options:')
-    print('-l/--load_path=    <Relative/path/to/saved/model>')
-    print('-t/--test_dir=     <Directory of test images>')
-    print('-d/--train_dir=     <Directory of train images>')
-    print('-r/--recursions=   <# recursive predictions to make on test>')
-    print('-a/--adversarial=  <{t/f}> (Whether to use adversarial training. Default=True)')
-    print('-n/--name=         <Subdirectory of ../Data/Save/*/ in which to save output of this run>')
-    print('-s/--steps=        <Number of training steps to run> (Default=1000001)')
-    print('-O/--overwrite     (Overwrites all previous data for the model with this save name)')
-    print('-T/--test_only     (Only runs a test step -- no training)')
-    print('-H/--help          (Prints usage)')
-    print('--stats_freq=      <How often to print loss/train error stats, in # steps>')
-    print('--summary_freq=    <How often to save loss/error summaries, in # steps>')
-    print('--img_save_freq=   <How often to save generated images, in # steps>')
-    print('--test_freq=       <How often to test the model on test data, in # steps>')
-    print('--model_save_freq= <How often to save the model, in # steps>')
+    print('-S/--skip_num=         <number of files to skip'>)
+    print('-p/--max_pile_height=  <max height of sand dunes'>)
+    print('-l/--load_path=        <Relative/path/to/saved/model>')
+    print('-t/--test_dir=         <Directory of test images>')
+    print('-c/--clips_dir=        <Directory of processed train images>')
+    print('-r/--recursions=       <# recursive predictions to make on test>')
+    print('-a/--adversarial=      <{t/f}> (Whether to use adversarial training. Default=True)')
+    print('-n/--name=             <Subdirectory of ../Data/Save/*/ in which to save output of this run>')
+    print('-s/--steps=            <Number of training steps to run> (Default=1000001)')
+    print('-O/--overwrite         (Overwrites all previous data for the model with this save name)')
+    print('-T/--test_only         (Only runs a test step -- no training)')
+    print('-H/--help              (Prints usage)')
+    print('--stats_freq=          <How often to print loss/train error stats, in # steps>')
+    print('--summary_freq=        <How often to save loss/error summaries, in # steps>')
+    print('--img_save_freq=       <How often to save generated images, in # steps>')
+    print('--test_freq=           <How often to test the model on test data, in # steps>')
+    print('--model_save_freq=     <How often to save the model, in # steps>')
 
 
 def main():
@@ -126,9 +128,9 @@ def main():
     load_path = None
     test_only = False
     num_test_rec = 1  # number of recursive predictions to make on test
-    num_steps = 10
+    num_steps = 20000
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 's:p:l:t:c:r:a:n:s:OTH',
+        opts, _ = getopt.getopt(sys.argv[1:], 'S:p:l:t:c:r:a:n:s:OTH',
                                 ['skip_num', 'max_pile_height', 'load_path=', 'test_dir=', 'clips_dir=', 'recursions=', 'adversarial=', 'name=',
                                  'steps=', 'overwrite', 'test_only', 'help', 'stats_freq=',
                                  'summary_freq=', 'img_save_freq=', 'test_freq=',
@@ -138,7 +140,7 @@ def main():
         sys.exit(2)
 
     for opt, arg in opts:
-        if opt in ('-s', '--skip_num'):
+        if opt in ('-S', '--skip_num'):
             c.SKIP_NUM = int(arg)
         if opt in ('-p', '--max_pile_height'):
             c.PILE_HEIGHT = int(arg)
@@ -176,9 +178,6 @@ def main():
 
     # set test frame dimensions
     assert os.path.exists(c.TEST_DIR)
-    c.TEST_HEIGHT, c.TEST_WIDTH = 50, 50
-    #print(c.FULL_HEIGHT)
-    #print(c.FULL_WIDTH)
 
     ##
     # Init and run the predictor

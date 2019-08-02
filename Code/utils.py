@@ -21,7 +21,7 @@ def normalize_frames(frames, max_h):
     """
     new_frames = frames.astype(np.float32)
 
-    #normalize values based on max height in data file
+    #normalize values based on max height of hills
     new_frames /= (max_h / 2)
 
     new_frames -= 1
@@ -91,10 +91,18 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
         ep_frame_paths = sorted(glob(os.path.join(ep_dir, '*')))
         start_index = np.random.choice(len(ep_frame_paths) - ((c.HIST_LEN + num_rec_out) * c.SKIP_NUM) + 1)
         clip_frame_paths = ep_frame_paths[start_index:start_index + ((c.HIST_LEN + num_rec_out) * c.SKIP_NUM)]
- 
+        
+        # maximum index in full image that can be cropped to size c.TEST_HEIGHT x c.TEST_WIDTH 
+        # comment this out if you want to process the crop of the full image
+        """
         width_max = np.random.randint(c.FULL_IMAGE_WIDTH - c.TEST_WIDTH)
-        height_max = np.random.randint(c.FULL_IMAGE_HEIGHT - c.TEST_HEIGHT)
+        if c.FULL_IMAGE_HEIGHT == c.TEST_HEIGHT:
+            height_max = 0
+        else:
+            height_max = np.random.randint(c.FULL_IMAGE_HEIGHT - c.TEST_HEIGHT)
+        """
 
+        # only process "skipped" paths
         clip_skipped_paths = []
         for x in range(len(clip_frame_paths)):
             if x == 0 or x % (c.SKIP_NUM) == 0:
@@ -103,12 +111,18 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
         # read in cropped frames in sequence
         for frame_num, frame_path in enumerate(clip_skipped_paths):   
 
-            # this file contains the full 600 x 150 x 100 picture - need to crop to 50x50 or 100x100            
+            # this file contains the full 600 x 150 image            
             file = open(frame_path, "r")
             frame = np.loadtxt(file)
             file.close()
 
-            cropped_frame = frame[height_max:height_max + c.TEST_HEIGHT, width_max:width_max + c.TEST_WIDTH]
+            # frame that is used for testing the model, i.e. the size of the images produced
+            # during training and testing - dims are (c.TEST_HEIGHT x c.TEST_WIDTH) - change in constants.py
+
+            # comment this out if you want to process the crop of the full image
+            #cropped_frame = frame[height_max:height_max + c.TEST_HEIGHT, width_max:width_max + c.TEST_WIDTH]
+
+            cropped_frame = frame
 
             #stack and normalize frame values
             frame_3 = np.dstack([cropped_frame]*3)
@@ -130,7 +144,10 @@ def process_clip():
     # repeat until we have a clip with movement in it.
     take_first = np.random.choice(2, p=[0.95, 0.05])
     cropped_clip = np.empty([c.TRAIN_HEIGHT, c.TRAIN_WIDTH, 3 * (c.HIST_LEN + 1)])
-    for i in range(100):  # cap at 100 trials in case the clip has no movement anywhere
+
+    # cap at 100 for larger images - will capture more movement
+    # cap at 10 for smaller crops: change in constants.py
+    for i in range(c.MOVEMENT_THRESHOLD):  # cap at 100 trials in case the clip has no movement anywhere
         crop_x = np.random.choice(c.TEST_WIDTH - c.TRAIN_WIDTH + 1)
         crop_y = np.random.choice(c.TEST_HEIGHT - c.TRAIN_HEIGHT + 1)
         cropped_clip = clip[crop_y:crop_y + c.TRAIN_HEIGHT, crop_x:crop_x + c.TRAIN_WIDTH, :]
@@ -158,10 +175,13 @@ def get_train_batch():
     clips = np.empty([c.BATCH_SIZE, c.TRAIN_HEIGHT, c.TRAIN_WIDTH, (3 * (c.HIST_LEN + 1))],
                      dtype=np.float32)
 
+    # choose a random training file containing multiple clips
     random_choice = np.random.choice(glob(os.path.join(c.TRAIN_DIR_CLIPS,'*')), 1)
+    # load all clips from file
     clip_array = np.load(random_choice[0])['arr_0']
 
     for i in range(c.BATCH_SIZE):
+        # choose one random clip from the file
         clip = clip_array[np.random.choice(len(clip_array))]
         clips[i] = clip
 
