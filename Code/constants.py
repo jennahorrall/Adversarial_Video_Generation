@@ -113,7 +113,7 @@ FULL_IMAGE_WIDTH = 600
 # test dims - used for testing model: this is the size
 # of the images generated when testing the the model
 TEST_HEIGHT = 150
-TEST_WIDTH = 600
+TEST_WIDTH = 150
 
 # the height and width of the patches to train on - keep at 32x32
 TRAIN_HEIGHT = TRAIN_WIDTH = 32

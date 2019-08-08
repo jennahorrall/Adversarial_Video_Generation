@@ -18,18 +18,21 @@ def process_training_data(num_clips):
     @warning: This can take a couple of hours to complete with large numbers of clips.
     """
     num_prev_clips = len(glob(c.TRAIN_DIR_CLIPS + '*'))
+
+    # temp array to store 100 clips in
     clips = np.empty([100, 32, 32, 15])
 
     for clip_num in range(num_prev_clips, num_clips + num_prev_clips):
 
         clip = process_clip()
-        
-        # add axis to clip for file saving purposes
 
+        # add axis to clip in order to stack in file
         reshape = np.expand_dims(clip,axis=0)
 
+        # add single clip to array
         clips[clip_num % 100] = reshape
-
+       
+        # save every 100 clips to a file (0-100.npz, 100-200.npz, etc.)
         if (clip_num + 1) % 100 == 0 and clip_num != 0:            
             np.savez_compressed(c.TRAIN_DIR_CLIPS + 'clips' + str((clip_num + 1) - 100) + '_to_' + str(clip_num + 1), clips)
             clips = np.empty([100, 32, 32, 15])

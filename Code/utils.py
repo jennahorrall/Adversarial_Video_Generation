@@ -3,6 +3,8 @@ import numpy as np
 from scipy.ndimage import imread
 from glob import glob
 import os
+import matplotlib.pyplot as plt
+
 
 import constants as c
 from tfutils import log10
@@ -86,7 +88,7 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
 
     # get a random clip of length HIST_LEN + num_rec_out from each directory
     for clip_num, ep_dir in enumerate(dirs):
-
+        print '\n'
         # paths to log files in order from the directory 
         ep_frame_paths = sorted(glob(os.path.join(ep_dir, '*')))
         start_index = np.random.choice(len(ep_frame_paths) - ((c.HIST_LEN + num_rec_out) * c.SKIP_NUM) + 1)
@@ -94,13 +96,13 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
         
         # maximum index in full image that can be cropped to size c.TEST_HEIGHT x c.TEST_WIDTH 
         # comment this out if you want to process the crop of the full image
-        """
+       
         width_max = np.random.randint(c.FULL_IMAGE_WIDTH - c.TEST_WIDTH)
         if c.FULL_IMAGE_HEIGHT == c.TEST_HEIGHT:
             height_max = 0
         else:
             height_max = np.random.randint(c.FULL_IMAGE_HEIGHT - c.TEST_HEIGHT)
-        """
+        
 
         # only process "skipped" paths
         clip_skipped_paths = []
@@ -115,19 +117,22 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
             file = open(frame_path, "r")
             frame = np.loadtxt(file)
             file.close()
-
+            print(frame_path)
+            #if np.amax(frame) <= 10:
+                #print(frame)
             # frame that is used for testing the model, i.e. the size of the images produced
             # during training and testing - dims are (c.TEST_HEIGHT x c.TEST_WIDTH) - change in constants.py
 
             # comment this out if you want to process the crop of the full image
-            #cropped_frame = frame[height_max:height_max + c.TEST_HEIGHT, width_max:width_max + c.TEST_WIDTH]
+            cropped_frame = frame[height_max:height_max + c.TEST_HEIGHT, width_max:width_max + c.TEST_WIDTH]
 
-            cropped_frame = frame
+            #cropped_frame = frame
 
             #stack and normalize frame values
             frame_3 = np.dstack([cropped_frame]*3)
             norm_frame = normalize_frames(frame_3, c.PILE_HEIGHT)
             clips[clip_num, :, :, frame_num * 3:(frame_num + 1) * 3] = norm_frame
+
 
     return clips
 
