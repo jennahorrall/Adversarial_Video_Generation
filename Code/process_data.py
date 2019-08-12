@@ -36,8 +36,9 @@ def process_training_data(num_clips):
         if (clip_num + 1) % 100 == 0 and clip_num != 0:            
             np.savez_compressed(c.TRAIN_DIR_CLIPS + 'clips' + str((clip_num + 1) - 100) + '_to_' + str(clip_num + 1), clips)
             clips = np.empty([100, 32, 32, 15])
-
-        if (clip_num + 1) % 100 == 0: print('Processed %d clips' % (clip_num + 1))
+            print('Processed %d clips' % (clip_num + 1))
+        #if (clip_num + 1) % 100 == 0: 
+            #print('Processed %d clips' % (clip_num + 1))
     
 def usage():
     print('Options:')
@@ -83,6 +84,7 @@ def main():
             sys.exit(2)
 
     assert os.path.exists(c.TRAIN_DIR)
+
 
     ##
     # Process data for training

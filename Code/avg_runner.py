@@ -28,7 +28,9 @@ class AVGRunner:
         self.num_test_rec = num_test_rec
 
         self.sess = tf.Session()
-        self.summary_writer = tf.train.SummaryWriter(c.SUMMARY_SAVE_DIR, graph=self.sess.graph)
+        #self.summary_writer = tf.train.SummaryWriter(c.SUMMARY_SAVE_DIR, graph=self.sess.graph)
+        self.summary_writer = tf.summary.FileWriter(c.SUMMARY_SAVE_DIR, graph=self.sess.graph)
+
 
         if c.ADVERSARIAL:
             print('Init discriminator...')
@@ -101,8 +103,8 @@ class AVGRunner:
 
 def usage():
     print('Options:')
-    print('-S/--skip_num=         <number of files to skip'>)
-    print('-p/--max_pile_height=  <max height of sand dunes'>)
+    print('-S/--skip_num=         <number of files to skip>')
+    print('-p/--max_pile_height=  <max height of sand dunes>')
     print('-l/--load_path=        <Relative/path/to/saved/model>')
     print('-t/--test_dir=         <Directory of test images>')
     print('-c/--clips_dir=        <Directory of processed train images>')
@@ -128,7 +130,7 @@ def main():
     load_path = None
     test_only = False
     num_test_rec = 1  # number of recursive predictions to make on test
-    num_steps = 20000
+    num_steps = 50000
     try:
         opts, _ = getopt.getopt(sys.argv[1:], 'S:p:l:t:c:r:a:n:s:OTH',
                                 ['skip_num', 'max_pile_height', 'load_path=', 'test_dir=', 'clips_dir=', 'recursions=', 'adversarial=', 'name=',

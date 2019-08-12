@@ -117,9 +117,6 @@ def get_full_clips(data_dir, num_clips, num_rec_out=1):
             file = open(frame_path, "r")
             frame = np.loadtxt(file)
             file.close()
-            print(frame_path)
-            #if np.amax(frame) <= 10:
-                #print(frame)
             # frame that is used for testing the model, i.e. the size of the images produced
             # during training and testing - dims are (c.TEST_HEIGHT x c.TEST_WIDTH) - change in constants.py
 

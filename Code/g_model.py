@@ -125,7 +125,6 @@ class GeneratorModel:
                                     # Convolve layer
                                     preds = tf.nn.conv2d(
                                         preds, ws[i], [1, 1, 1, 1], padding=c.PADDING_G)
-
                                     # Activate with ReLU (or Tanh for last layer)
                                     if i == len(self.scale_kernel_sizes[scale_num]) - 1:
                                         preds = tf.nn.tanh(preds + bs[i])
@@ -196,7 +195,8 @@ class GeneratorModel:
                                                         name='train_op')
 
                 # train loss summary
-                loss_summary = tf.scalar_summary('train_loss_G', self.global_loss)
+                loss_summary = tf.summary.scalar('train_loss_G', self.global_loss)
+                #loss_summary = tf.scalar_summary('train_loss_G', self.global_loss)
                 self.summaries_train.append(loss_summary)
 
             ##
@@ -215,22 +215,22 @@ class GeneratorModel:
                 self.sharpdiff_error_test = sharp_diff_error(self.scale_preds_test[-1],
                                                              self.gt_frames_test)
                 # train error summaries
-                summary_psnr_train = tf.scalar_summary('train_PSNR',
+                summary_psnr_train = tf.summary.scalar('train_PSNR',
                                                        self.psnr_error_train)
-                summary_sharpdiff_train = tf.scalar_summary('train_SharpDiff',
+                summary_sharpdiff_train = tf.summary.scalar('train_SharpDiff',
                                                             self.sharpdiff_error_train)
                 self.summaries_train += [summary_psnr_train, summary_sharpdiff_train]
 
                 # test error
-                summary_psnr_test = tf.scalar_summary('test_PSNR',
+                summary_psnr_test = tf.summary.scalar('test_PSNR',
                                                       self.psnr_error_test)
-                summary_sharpdiff_test = tf.scalar_summary('test_SharpDiff',
+                summary_sharpdiff_test = tf.summary.scalar('test_SharpDiff',
                                                            self.sharpdiff_error_test)
                 self.summaries_test += [summary_psnr_test, summary_sharpdiff_test]
 
             # add summaries to visualize in TensorBoard
-            self.summaries_train = tf.merge_summary(self.summaries_train)
-            self.summaries_test = tf.merge_summary(self.summaries_test)
+            self.summaries_train = tf.summary.merge(self.summaries_train)
+            self.summaries_test = tf.summary.merge(self.summaries_test)
 
     def train_step(self, batch, discriminator=None):
         """
