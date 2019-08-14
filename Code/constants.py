@@ -75,8 +75,6 @@ def set_test_dir(directory):
     global TEST_DIR, TEST_HEIGHT, TEST_WIDTH
 
     TEST_DIR = directory
-    #FULL_HEIGHT, FULL_WIDTH = get_test_frame_dims()
-    #TEST_HEIGHT, TEST_WIDTH = 50, 50
 
 # root directory for all data
 DATA_DIR = get_dir('../Data/')
