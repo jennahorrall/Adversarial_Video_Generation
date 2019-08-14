@@ -125,6 +125,7 @@ class GeneratorModel:
                                     # Convolve layer
                                     preds = tf.nn.conv2d(
                                         preds, ws[i], [1, 1, 1, 1], padding=c.PADDING_G)
+
                                     # Activate with ReLU (or Tanh for last layer)
                                     if i == len(self.scale_kernel_sizes[scale_num]) - 1:
                                         preds = tf.nn.tanh(preds + bs[i])
